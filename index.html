@@ -3,224 +3,259 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Niksar Dijital Pano - V10</title>
-    <!-- BEYAZ EKRANI ENGELLEYEN ZORUNLU STİL -->
+    <title>Niksar Dijital Pano - V23</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        
         html, body {
-            background-color: #020617 !important; /* Lacivert-Siyah */
+            background-color: #020617 !important;
             margin: 0; padding: 0;
             height: 100vh; width: 100vw;
-            display: flex; justify-content: center; align-items: center;
-            color: white; font-family: sans-serif;
+            color: white; font-family: 'Inter', sans-serif;
             overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
         }
-        #main-container {
+
+        #viewport {
             width: 1080px; height: 1920px;
             display: flex; flex-direction: column;
             position: relative;
+            background-color: #020617;
+            transform-origin: center center;
+            box-sizing: border-box;
+            padding: 40px;
         }
-        .setup-box {
-            text-align: center; border: 2px solid rgba(255,255,255,0.1);
-            padding: 50px; border-radius: 40px; background: rgba(255,255,255,0.02);
+
+        .urgent-flash { animation: flash-red 0.8s infinite; }
+        @keyframes flash-red {
+            0%, 100% { background-color: #E30613; transform: scale(1); }
+            50% { background-color: #ff4d4d; transform: scale(1.05); }
         }
-        #video-container { position: absolute; inset: 0; z-index: 10; display: none; background: black; }
-        video { width: 100%; height: 100%; object-fit: cover; }
-        #duty-layer { flex: 1; display: flex; flex-direction: column; opacity: 0; }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 60px;
+        }
+
+        /* PERDE */
+        #setup-layer {
+            position: absolute; inset: 0; z-index: 9999;
+            background: #020617; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+        }
+
+        #main-content {
+            flex: 1; display: none; flex-direction: column;
+            width: 100%;
+        }
+
+        iframe { border-radius: 40px; border: 4px solid #1e293b; background: #0f172a; }
     </style>
-    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
 
-    <div id="main-container">
-        <!-- KURULUM MESAJI -->
-        <div id="setup-message" class="setup-box">
-            <div class="bg-red-600 w-24 h-24 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
-                <span class="text-5xl font-black">E</span>
+    <div id="viewport">
+        <!-- KURULUM EKRANI -->
+        <div id="setup-layer">
+            <div class="bg-red-600 w-48 h-48 rounded-[50px] flex items-center justify-center mb-12 shadow-2xl">
+                <span class="text-9xl font-black text-white">E</span>
             </div>
-            <h2 class="text-4xl font-bold mb-4 uppercase">Sistem Hazır</h2>
-            <p class="text-xl text-slate-400 mb-8">
-                Tebrikler, beyaz ekranı aştınız.<br>
-                Veri girişi için sol alt köşeye 5 kez hızlıca tıklayın.
-            </p>
+            <h2 class="text-7xl font-black uppercase mb-6 tracking-tighter">SİSTEM HAZIR</h2>
+            <p class="text-4xl text-slate-400 max-w-2xl">Veri bekleniyor...<br>Sol alta 5 kez hızlı tıkla.</p>
         </div>
 
-        <!-- REKLAM KATMANI -->
-        <div id="video-container">
-            <video id="ad-video" muted playsinline></video>
-        </div>
-
-        <!-- NÖBETÇİ KATMANI -->
-        <div id="duty-layer" class="p-12 space-y-12">
-            <header class="text-center border-b-8 border-red-600 pb-12">
-                <div id="clock" class="text-[12rem] font-black leading-none tabular-nums">00:00:00</div>
-                <div id="date" class="text-4xl font-bold text-slate-400 mt-4 uppercase">-- --- ----</div>
-            </header>
-            
-            <div class="bg-white/5 p-12 rounded-[50px] border border-white/10 text-center space-y-8">
-                <div class="bg-red-600 inline-block px-12 py-3 rounded-full text-2xl font-black uppercase">Şu An Nöbetçi</div>
-                <h2 id="ph-name" class="text-8xl font-black uppercase tracking-tighter text-white leading-none">--</h2>
-                <div class="w-full h-1 bg-white/10"></div>
-                <div class="flex items-center justify-center gap-6">
-                    <p id="ph-phone" class="text-7xl font-black tracking-widest text-green-400">--</p>
+        <!-- ANA PANO -->
+        <div id="main-content">
+            <header class="flex flex-col items-center space-y-6 mb-10">
+                <div class="flex items-center gap-10">
+                    <div class="bg-red-600 w-24 h-24 rounded-3xl flex items-center justify-center shadow-2xl">
+                        <svg width="60" height="60" viewBox="0 0 100 100"><path d="M30 25H75V38H43V44H70V56H43V62H75V75H30V25Z" fill="white"/></svg>
+                    </div>
+                    <h1 class="text-6xl font-black italic tracking-tighter uppercase">NİKSAR NÖBETÇİ ECZANE</h1>
                 </div>
-                <p id="ph-address" class="text-4xl text-slate-300 font-bold leading-tight">--</p>
+                <div id="clock" class="text-[15rem] font-black leading-none tabular-nums tracking-tighter">00:00:00</div>
+                <div id="date-text" class="text-5xl font-bold text-slate-500 uppercase tracking-[0.3em]">-- --- ----</div>
+            </header>
+
+            <div id="video-layer" class="hidden h-[40vh] mb-10 overflow-hidden shadow-2xl rounded-[40px]">
+                <video id="ad-video" muted playsinline style="width:100%; height:100%; object-fit:cover;"></video>
             </div>
 
-            <div class="flex-1 rounded-[50px] overflow-hidden border-4 border-slate-800 relative min-h-[600px]">
-                <iframe id="map-iframe" width="100%" height="100%" frameborder="0" style="filter: invert(90%) hue-rotate(180deg);"></iframe>
-            </div>
+            <div id="info-layer" class="flex-1 flex flex-col space-y-10">
+                <div class="glass-card p-14 flex flex-col items-center text-center space-y-8 shadow-2xl">
+                    <div id="status-badge" class="urgent-flash px-16 py-4 rounded-full text-4xl font-black uppercase">ŞU AN NÖBETÇİ</div>
+                    <h2 id="ph-name" class="text-[10rem] font-black uppercase tracking-tighter leading-[0.85] py-2">--</h2>
+                    <div class="w-full h-1 bg-white/10 rounded-full"></div>
+                    <p id="ph-phone" class="text-9xl font-black text-green-400">--</p>
+                    <p id="ph-address" class="text-5xl text-slate-300 font-bold leading-tight">--</p>
+                </div>
 
-            <div class="flex justify-between items-center bg-white p-8 rounded-[40px]">
-                <img id="qr-code" src="" class="w-48 h-48">
-                <div class="text-right text-slate-900">
-                    <p class="font-black text-3xl uppercase leading-none">Yol Tarifi</p>
-                    <p class="font-bold text-xl opacity-60 uppercase mt-2">Telefondan Tara</p>
+                <!-- HARİTA -->
+                <div class="flex-1 relative">
+                    <iframe id="map-iframe" width="100%" height="100%" frameborder="0"></iframe>
+                </div>
+
+                <!-- ALT BAR (QR) -->
+                <div class="flex justify-between items-center bg-white p-8 rounded-[60px] shadow-2xl border-b-[15px] border-slate-300">
+                    <div class="flex items-center gap-8">
+                        <img id="qr-code" src="" class="w-48 h-48" alt="QR">
+                        <div class="text-slate-900">
+                            <p class="font-black text-6xl leading-none uppercase italic">NAVİGASYON</p>
+                            <p class="font-bold text-2xl opacity-60 uppercase mt-2">Telefondan Tara</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- GİZLİ AYARLAR TETİKLEYİCİ -->
-    <div onclick="countClicks()" style="position:fixed; bottom:0; left:0; width:200px; height:200px; z-index:1000; cursor:pointer;"></div>
+    <!-- TETİKLEYİCİ -->
+    <div onclick="handleSecretClick()" style="position:fixed; bottom:0; left:0; width:400px; height:400px; z-index:10000; cursor:pointer;"></div>
+
+    <!-- ŞİFRE MODALI -->
+    <div id="pin-overlay" class="fixed inset-0 bg-black/98 z-[10001] hidden flex items-center justify-center">
+        <div class="max-w-2xl w-full text-center p-16 space-y-12">
+            <h3 class="text-7xl font-black uppercase">ŞİFRE</h3>
+            <input type="password" id="custom-pin-input" maxlength="4" class="w-full bg-slate-900 border-8 border-slate-700 rounded-[50px] p-10 text-center text-[10rem] font-black text-white outline-none" placeholder="****">
+            <div class="flex gap-6">
+                <button onclick="verifyPin()" class="flex-1 bg-white text-black py-10 rounded-[50px] font-black text-5xl uppercase">GİRİŞ</button>
+                <button onclick="closePinOverlay()" class="px-12 bg-slate-800 text-white rounded-[50px] font-black text-3xl uppercase">İPTAL</button>
+            </div>
+        </div>
+    </div>
 
     <!-- AYARLAR MODALI -->
-    <div id="settings-modal" class="fixed inset-0 bg-black/98 z-[2000] hidden p-20 overflow-y-auto">
-        <div class="max-w-4xl mx-auto space-y-12">
-            <h3 class="text-4xl font-black uppercase">Liste Güncelleme</h3>
-            <textarea id="list-input" class="w-full h-64 bg-slate-900 border-2 border-slate-700 rounded-3xl p-8 font-mono text-xl outline-none text-blue-400"></textarea>
-            <textarea id="video-input" class="w-full h-32 bg-slate-900 border-2 border-slate-700 rounded-3xl p-8 font-mono text-xl outline-none text-green-400" placeholder="Reklam Linkleri (MP4)"></textarea>
-            <div class="flex gap-4">
-                <button onclick="saveAndApply()" class="flex-1 bg-white text-black py-8 rounded-3xl font-black text-3xl">KAYDET</button>
-                <button onclick="toggleSettings()" class="px-12 bg-slate-800 rounded-3xl font-bold uppercase">Kapat</button>
-            </div>
+    <div id="settings-modal" class="fixed inset-0 bg-black/98 z-[10002] hidden p-20 overflow-y-auto text-left">
+        <div class="max-w-5xl mx-auto space-y-10">
+            <h3 class="text-5xl font-black uppercase italic border-b border-white/10 pb-6">Pano Ayarları</h3>
+            <textarea id="list-input" oninput="checkParseStatus()" class="w-full h-80 bg-slate-900 border-4 border-slate-700 rounded-[40px] p-10 font-mono text-3xl text-blue-400 outline-none"></textarea>
+            <div id="parse-status" class="text-2xl font-bold">Kayıt Bekleniyor...</div>
+            <textarea id="video-input" class="w-full h-32 bg-slate-900 border-4 border-slate-700 rounded-[40px] p-10 font-mono text-2xl text-green-400 outline-none" placeholder="Video MP4 Linkleri"></textarea>
+            <button onclick="saveAndApply()" class="w-full bg-white text-black py-10 rounded-[50px] font-black text-6xl uppercase">KAYDET</button>
         </div>
     </div>
 
     <script>
-        let dutyRoster = [];
-        let videoList = [];
-        let currentVideoIndex = 0;
-        let clickCounter = 0;
-        let lastClickTime = 0;
-        let systemPin = localStorage.getItem('niksar_pin_v10') || "5260"; // Varsayılan PIN: 5260
+        let dutyRoster = [], videoList = [], currentVideoIndex = 0, clickCounter = 0, lastClickTime = 0;
+        const systemPin = "5260";
+
+        function scaleToFit() { const s = Math.min(window.innerWidth / 1080, window.innerHeight / 1920); document.getElementById('viewport').style.transform = `scale(${s})`; }
 
         function updateClock() {
             const now = new Date();
             document.getElementById('clock').textContent = now.toLocaleTimeString('tr-TR', { hour12: false });
-            document.getElementById('date').textContent = now.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' });
+            document.getElementById('date-text').textContent = now.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' });
             if (now.getSeconds() === 0) checkMode();
+        }
+
+        function handleSecretClick() {
+            const n = Date.now();
+            if (n - lastClickTime > 2000) clickCounter = 0;
+            clickCounter++;
+            lastClickTime = n;
+            if (clickCounter >= 5) { document.getElementById('pin-overlay').classList.remove('hidden'); document.getElementById('custom-pin-input').focus(); clickCounter = 0; }
+        }
+
+        function verifyPin() {
+            if (document.getElementById('custom-pin-input').value === systemPin) {
+                document.getElementById('pin-overlay').classList.add('hidden');
+                document.getElementById('settings-modal').classList.remove('hidden');
+                document.getElementById('custom-pin-input').value = "";
+                checkParseStatus();
+            } else { alert("HATALI!"); document.getElementById('custom-pin-input').value = ""; }
+        }
+
+        function closePinOverlay() { document.getElementById('pin-overlay').classList.add('hidden'); }
+
+        function checkParseStatus() {
+            const raw = document.getElementById('list-input').value;
+            const rOda = /<([^>]+)>\s*<([^>]+)>\s*<([^>]+)>/g;
+            const matches = raw.match(rOda) || [];
+            const s = document.getElementById('parse-status');
+            s.textContent = matches.length > 0 ? `${matches.length} Kayıt Tamam ✓` : "Hatalı Format X";
+            s.style.color = matches.length > 0 ? "#22c55e" : "#ef4444";
+        }
+
+        function process(lt, vt) {
+            dutyRoster = [];
+            const rOda = /<([^>]+)>\s*<([^>]+)>\s*<([^>]+)>/g;
+            let m;
+            while ((m = rOda.exec(lt)) !== null) {
+                const info = m[2].trim().split(' . ');
+                dutyRoster.push({ isim: m[1].trim(), adres: info[0], tel: info[1] || "", tarih: m[3].trim() });
+            }
+            videoList = vt.split('\n').filter(x => x.trim().startsWith('http'));
+        }
+
+        function saveAndApply() {
+            localStorage.setItem('n_v23_list', document.getElementById('list-input').value);
+            localStorage.setItem('n_v23_video', document.getElementById('video-input').value);
+            process(document.getElementById('list-input').value, document.getElementById('video-input').value);
+            checkMode();
+            document.getElementById('settings-modal').classList.add('hidden');
         }
 
         function checkMode() {
             const now = new Date();
             const hour = now.getHours();
-            const day = now.getDay();
-            const isWeekend = (day === 0 || day === 6);
+            const isWeekend = (now.getDay() === 0 || now.getDay() === 6);
             const isAdTime = !isWeekend && (hour >= 8 && hour < 18);
             
-            const vCont = document.getElementById('video-container');
-            const dLayer = document.getElementById('duty-layer');
-            const setupMsg = document.getElementById('setup-message');
-            const video = document.getElementById('ad-video');
+            const setup = document.getElementById('setup-layer');
+            const main = document.getElementById('main-content');
+            const videoLayer = document.getElementById('video-layer');
+            const infoLayer = document.getElementById('info-layer');
 
-            if (dutyRoster.length === 0 && videoList.length === 0) {
-                setupMsg.style.display = 'block';
-                dLayer.style.opacity = '0';
-                vCont.style.display = 'none';
-                return;
-            }
+            if (dutyRoster.length === 0) { setup.style.display = 'flex'; main.style.display = 'none'; return; }
 
-            setupMsg.style.display = 'none';
+            let t = new Date(now);
+            if (now.getHours() < 8) t.setDate(now.getDate() - 1);
+            const target = `${String(t.getDate()).padStart(2,'0')}.${String(t.getMonth()+1).padStart(2,'0')}.${t.getFullYear()}`;
+            let todayPh = dutyRoster.find(e => e.tarih === target) || dutyRoster[0];
+
+            setup.style.display = 'none';
+            main.style.display = 'flex';
 
             if (isAdTime && videoList.length > 0) {
-                vCont.style.display = 'block';
-                dLayer.style.opacity = '0';
-                if (video.paused || video.src === "") playNextVideo();
+                videoLayer.classList.remove('hidden'); infoLayer.classList.add('hidden');
+                const v = document.getElementById('ad-video');
+                if (v.paused || v.src === "") {
+                    v.src = videoList[currentVideoIndex];
+                    v.play().catch(() => {});
+                    v.onended = () => { currentVideoIndex = (currentVideoIndex + 1) % videoList.length; v.src = videoList[currentVideoIndex]; v.play(); };
+                }
             } else {
-                vCont.style.display = 'none';
-                dLayer.style.opacity = '1';
-                video.pause();
-                updateDisplay();
+                videoLayer.classList.add('hidden'); infoLayer.classList.remove('hidden');
+                updateDisplay(todayPh);
             }
         }
 
-        function playNextVideo() {
-            if (videoList.length === 0) return;
-            const v = document.getElementById('ad-video');
-            v.src = videoList[currentVideoIndex];
-            v.play().catch(() => setTimeout(skipVideo, 2000));
-            v.onended = skipVideo;
-        }
-
-        function skipVideo() {
-            currentVideoIndex = (currentVideoIndex + 1) % videoList.length;
-            playNextVideo();
-        }
-
-        function updateDisplay() {
-            const now = new Date();
-            const hour = now.getHours();
-            let t = new Date(now);
-            if (hour < 8) t.setDate(now.getDate() - 1);
-            const today = `${String(t.getDate()).padStart(2,'0')}.${String(t.getMonth()+1).padStart(2,'0')}.${t.getFullYear()}`;
+        function updateDisplay(ph) {
+            document.getElementById('ph-name').textContent = ph.isim;
+            document.getElementById('ph-address').textContent = ph.adres;
+            document.getElementById('ph-phone').textContent = ph.tel;
             
-            const d = dutyRoster.find(e => e.tarih === today);
-            if (d) {
-                document.getElementById('ph-name').textContent = d.isim;
-                document.getElementById('ph-address').textContent = d.adres;
-                document.getElementById('ph-phone').textContent = d.tel;
-                const q = encodeURIComponent(`${d.isim} Eczanesi Niksar Tokat`);
-                document.getElementById('map-iframe').src = `https://maps.google.com/maps?q=${q}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
-                document.getElementById('qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent('https://www.google.com/maps/search/?api=1&query='+q)}`;
-            }
-        }
-
-        function countClicks() {
-            const n = Date.now();
-            if (n - lastClickTime > 2000) clickCounter = 0;
-            clickCounter++;
-            lastClickTime = n;
-            if (clickCounter >= 5) {
-                const pin = prompt("GÜVENLİK PIN KODUNU GİRİN:");
-                if (pin === systemPin) toggleSettings();
-                clickCounter = 0;
-            }
-        }
-
-        function toggleSettings() { document.getElementById('settings-modal').classList.toggle('hidden'); }
-
-        function saveAndApply() {
-            const l = document.getElementById('list-input').value;
-            const v = document.getElementById('video-input').value;
-            localStorage.setItem('l_v10', l);
-            localStorage.setItem('v_v10', v);
-            process(l, v);
-            checkMode();
-            toggleSettings();
-        }
-
-        function process(lt, vt) {
-            const r = /<([^>]+)>\s*<([^>]+)>\s*<([^>]+)>/g;
-            dutyRoster = [];
-            let m;
-            while ((m = r.exec(lt)) !== null) {
-                const p = m[2].trim().split(' . ');
-                dutyRoster.push({ isim: m[1].trim(), adres: p[0], tel: p[1] || "", tarih: m[3].trim() });
-            }
-            videoList = vt.split('\n').filter(x => x.trim().startsWith('http'));
+            const query = encodeURIComponent(`${ph.isim} Eczanesi Niksar Tokat`);
+            // HARİTA YENİLEME
+            document.getElementById('map-iframe').src = `https://maps.google.com/maps?q=${query}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+            
+            // QR KOD YENİLEME (Basitleştirilmiş Link)
+            const mapLink = `https://www.google.com/maps/search/?api=1&query=${query}`;
+            document.getElementById('qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(mapLink)}`;
         }
 
         window.onload = () => {
-            const sl = localStorage.getItem('l_v10');
-            const sv = localStorage.getItem('v_v10');
+            scaleToFit(); window.addEventListener('resize', scaleToFit);
+            const sl = localStorage.getItem('n_v23_list'), sv = localStorage.getItem('n_v23_video');
             if (sl) {
                 document.getElementById('list-input').value = sl;
                 document.getElementById('video-input').value = sv || "";
                 process(sl, sv || "");
             }
-            setInterval(updateClock, 1000);
-            updateClock();
-            checkMode();
+            setInterval(updateClock, 1000); updateClock(); checkMode();
         };
     </script>
 </body>
