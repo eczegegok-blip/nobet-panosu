@@ -2,14 +2,15 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Niksar Dijital Pano - V30</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Niksar Dijital Pano - V31</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         
+        /* KOYU ECZANE KIRMIZISI - DERİNLİK ARTIRILDI */
         html, body {
-            background: radial-gradient(circle at center, #450a0a 0%, #1a0505 100%) !important;
+            background: #1a0505 !important;
             margin: 0; padding: 0;
             height: 100vh; width: 100vw;
             color: white; font-family: 'Inter', sans-serif;
@@ -17,18 +18,29 @@
             display: flex; justify-content: center; align-items: center;
         }
 
+        /* VİTRİN KAPSAYICI - SIFIR MARJ */
         #viewport {
             width: 1080px; height: 1920px;
             display: flex; flex-direction: column;
             position: relative;
             transform-origin: center center;
             box-sizing: border-box;
-            padding: 40px 40px 60px 40px;
+            padding: 30px; /* Padding minimize edildi */
         }
+
+        /* VİDEO KATMANI: TÜM EKRANI (VIEWPORT DIŞINI BİLE) KAPLAR */
+        #video-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 10000; /* Her şeyin üstünde */
+            background: black;
+            display: none;
+        }
+        video { width: 100%; height: 100%; object-fit: cover; }
 
         .urgent-flash {
             animation: flash-red 1s infinite;
-            box-shadow: 0 0 80px rgba(227, 6, 19, 0.5);
+            box-shadow: 0 0 100px rgba(227, 6, 19, 0.6);
         }
         @keyframes flash-red {
             0%, 100% { background-color: #E30613; transform: scale(1); }
@@ -36,127 +48,129 @@
         }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(30px);
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(40px);
             border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 60px;
+            border-radius: 70px;
         }
 
         #setup-layer {
-            position: absolute; inset: 0; z-index: 9999;
+            position: absolute; inset: 0; z-index: 20000;
             background: #1a0505; display: flex; flex-direction: column;
             align-items: center; justify-content: center; text-align: center;
         }
 
-        #main-content {
-            flex: 1; display: none; flex-direction: column;
-            width: 100%; height: 100%;
-        }
-
-        #video-layer {
-            flex: 1; display: none; width: 100%; height: 100%;
-            background: black; border-radius: 60px; overflow: hidden;
-            position: relative;
-        }
-
-        video { width: 100%; height: 100%; object-fit: cover; }
-
         iframe { 
-            border-radius: 40px; 
-            border: 3px solid rgba(255,255,255,0.1); 
+            border-radius: 50px; 
+            border: 4px solid rgba(255,255,255,0.05); 
             background: #000;
-            filter: grayscale(1) invert(0.9) contrast(1.2);
+            filter: grayscale(1) invert(0.95) contrast(1.1) brightness(0.9);
         }
     </style>
 </head>
 <body>
 
+    <!-- VIDEO LAYER (SADECE MESAİ SAATİNDE TÜM EKRANI KAPLAR) -->
+    <div id="video-layer">
+        <video id="ad-video" muted playsinline></video>
+        <div class="absolute bottom-10 right-10 bg-black/60 px-8 py-3 rounded-full text-xl font-bold uppercase tracking-widest text-white/70 border border-white/10">Tanıtım Yayını</div>
+    </div>
+
     <div id="viewport">
-        <!-- SETUP LAYER -->
+        <!-- KURULUM EKRANI -->
         <div id="setup-layer">
             <div class="bg-red-600 w-48 h-48 rounded-[50px] flex items-center justify-center mb-12 shadow-2xl">
                 <svg width="100" height="100" viewBox="0 0 100 100"><path d="M30 25H75V38H43V44H70V56H43V62H75V75H30V25Z" fill="white"/></svg>
             </div>
-            <h2 class="text-6xl font-black uppercase mb-6 tracking-tighter text-white">YÜKLENİYOR...</h2>
-            <p class="text-3xl text-slate-400">Veri girişi için sol alta 5 kez tıkla.</p>
+            <h2 class="text-7xl font-black uppercase mb-6 tracking-tighter">SİSTEM HAZIR</h2>
+            <p class="text-4xl text-slate-400">Veri girişi için sol alta 5 kez tıkla.</p>
         </div>
 
-        <div id="main-content">
-            <!-- HEADER: SADECE NÖBET SAATLERİNDE GÖRÜNÜR -->
-            <header id="main-header" class="flex flex-col items-center space-y-3 mb-10">
-                <div class="flex items-center gap-6">
-                    <div class="bg-white w-16 h-16 rounded-2xl flex items-center justify-center shadow-2xl">
-                        <svg width="40" height="40" viewBox="0 0 100 100"><path d="M30 25H75V38H43V44H70V56H43V62H75V75H30V25Z" fill="#E30613"/></svg>
+        <!-- NÖBETÇİ İÇERİĞİ -->
+        <div id="main-content" class="flex-1 flex flex-col w-full h-full opacity-0 transition-opacity duration-700">
+            <header class="flex flex-col items-center space-y-4 mb-10">
+                <div class="flex items-center gap-8">
+                    <div class="bg-white w-20 h-20 rounded-2xl flex items-center justify-center shadow-2xl">
+                        <svg width="50" height="50" viewBox="0 0 100 100"><path d="M30 25H75V38H43V44H70V56H43V62H75V75H30V25Z" fill="#E30613"/></svg>
                     </div>
-                    <h1 class="text-4xl font-black italic tracking-tighter uppercase opacity-70">NİKSAR NÖBETÇİ ECZANE</h1>
+                    <h1 class="text-5xl font-black italic tracking-tighter uppercase opacity-80">NİKSAR NÖBETÇİ ECZANE</h1>
                 </div>
-                <div id="clock" class="text-[13rem] font-black leading-none tabular-nums tracking-tighter drop-shadow-2xl">00:00:00</div>
-                <div id="date-text" class="text-3xl font-bold text-red-200/40 uppercase tracking-[0.4em]">-- --- ----</div>
+                <div id="clock" class="text-[15rem] font-black leading-none tabular-nums tracking-tighter drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)]">00:00:00</div>
+                <div id="date-text" class="text-4xl font-bold text-red-200/40 uppercase tracking-[0.5em]">-- --- ----</div>
             </header>
 
-            <!-- VIDEO LAYER -->
-            <div id="video-layer">
-                <video id="ad-video" muted playsinline></video>
-                <div class="absolute bottom-10 left-10 bg-black/60 px-6 py-2 rounded-full text-sm font-bold uppercase tracking-widest text-white">Tanıtım Yayını</div>
-            </div>
-
-            <!-- INFO LAYER -->
-            <main id="info-layer" class="flex-1 flex flex-col space-y-10 overflow-hidden">
-                <div class="glass-card p-12 flex flex-col items-center text-center space-y-8 shadow-2xl">
-                    <div id="status-badge" class="urgent-flash px-20 py-5 rounded-full text-5xl font-black uppercase text-white">
+            <main id="info-layer" class="flex-1 flex flex-col space-y-8 overflow-hidden">
+                <!-- NÖBETÇİ KARTI -->
+                <div class="glass-card p-14 flex flex-col items-center text-center space-y-10 shadow-2xl">
+                    <div id="status-badge" class="urgent-flash px-24 py-6 rounded-full text-6xl font-black uppercase text-white shadow-2xl">
                         ŞU AN NÖBETÇİ
                     </div>
-                    <h2 id="ph-name" class="text-[9rem] font-black uppercase tracking-tighter leading-none py-2 text-white">--</h2>
-                    <div class="w-full h-0.5 bg-white/20 rounded-full"></div>
-                    <div class="flex items-center gap-5">
-                        <svg class="w-12 h-12 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                        <p id="ph-phone" class="text-7xl font-black text-green-400 tracking-wider">--</p>
+                    
+                    <h2 id="ph-name" class="text-[11rem] font-black uppercase tracking-tighter leading-[0.8] py-4 text-white drop-shadow-xl">--</h2>
+                    
+                    <div class="w-full h-0.5 bg-white/10 rounded-full"></div>
+                    
+                    <div class="flex items-center gap-8">
+                        <svg class="w-16 h-16 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                        <p id="ph-phone" class="text-8xl font-black text-green-400 tabular-nums tracking-tighter">--</p>
                     </div>
-                    <p id="ph-address" class="text-4xl text-red-100/70 font-bold leading-tight italic">--</p>
+
+                    <p id="ph-address" class="text-5xl text-red-100/70 font-bold leading-tight max-w-5xl italic">--</p>
                 </div>
 
-                <div class="flex-1 relative min-h-[400px]">
+                <!-- HARİTA -->
+                <div class="flex-1 relative min-h-[450px]">
                     <iframe id="map-iframe" width="100%" height="100%" frameborder="0"></iframe>
                 </div>
 
-                <div class="flex justify-between items-center bg-white p-8 rounded-[50px] shadow-2xl border-b-[15px] border-red-900/20">
-                    <img id="qr-code" src="" class="w-40 h-40" alt="QR">
-                    <div class="text-right text-slate-400 font-bold pr-4">
-                        <p class="text-slate-900 text-3xl font-black italic">NAVİGASYON</p>
-                        <p class="text-slate-500 text-lg uppercase">Telefondan Tara</p>
+                <!-- NAVİGASYON VE ALT BİLGİ -->
+                <div class="flex justify-between items-center bg-white p-10 rounded-[70px] shadow-2xl border-b-[20px] border-red-900/10">
+                    <div class="flex items-center gap-10">
+                        <img id="qr-code" src="" class="w-48 h-48" alt="QR">
+                        <div class="text-slate-900">
+                            <p class="font-black text-6xl leading-none uppercase italic tracking-tighter">NAVİGASYON</p>
+                            <p class="font-bold text-2xl opacity-50 uppercase mt-4 text-slate-500">Kameranla Tara</p>
+                        </div>
+                    </div>
+                    <div class="text-right text-slate-400 font-bold space-y-1 pr-6">
+                        <p class="text-xl uppercase tracking-widest">Nöbet Saatleri</p>
+                        <p class="text-slate-900 text-3xl font-black">H.İçi: 18:00 - 08:00</p>
+                        <p class="text-slate-900 text-3xl font-black uppercase">H.Sonu: 24 SAAT</p>
                     </div>
                 </div>
             </main>
         </div>
     </div>
 
-    <!-- SECRET TRIGGER -->
-    <div onclick="handleSecretClick()" style="position:fixed; bottom:0; left:0; width:450px; height:450px; z-index:10000; cursor:pointer;"></div>
+    <!-- SECRET TRIGGER AREA -->
+    <div onclick="handleSecretClick()" style="position:fixed; bottom:0; left:0; width:500px; height:500px; z-index:30000; cursor:pointer;"></div>
 
     <!-- PIN OVERLAY -->
-    <div id="pin-overlay" class="fixed inset-0 bg-[#1a0505]/98 z-[10001] hidden flex items-center justify-center">
-        <div class="max-w-2xl w-full text-center p-16 space-y-12">
-            <h3 class="text-7xl font-black uppercase tracking-widest text-red-600">PİN</h3>
+    <div id="pin-overlay" class="fixed inset-0 bg-[#1a0505]/98 z-[40000] hidden flex items-center justify-center">
+        <div class="max-w-2xl w-full text-center p-16 space-y-12 glass-card">
+            <h3 class="text-7xl font-black uppercase tracking-widest text-red-600">GİRİŞ</h3>
             <input type="password" id="custom-pin-input" maxlength="4" class="w-full bg-red-950/50 border-8 border-red-900 rounded-[50px] p-10 text-center text-[10rem] font-black text-white outline-none" placeholder="****">
-            <button onclick="verifyPin()" class="w-full bg-white text-red-900 py-10 rounded-[50px] font-black text-5xl uppercase">GİRİŞ YAP</button>
+            <div class="grid grid-cols-2 gap-6">
+                <button onclick="verifyPin()" class="bg-white text-red-900 py-10 rounded-[50px] font-black text-5xl uppercase shadow-2xl">ONAY</button>
+                <button onclick="closePinOverlay()" class="bg-red-900/20 text-white rounded-[50px] font-black text-3xl uppercase">İPTAL</button>
+            </div>
         </div>
     </div>
 
     <!-- SETTINGS MODAL -->
-    <div id="settings-modal" class="fixed inset-0 bg-[#1a0505]/98 z-[10002] hidden p-20 overflow-y-auto text-left">
+    <div id="settings-modal" class="fixed inset-0 bg-[#1a0505]/98 z-[50000] hidden p-20 overflow-y-auto text-left">
         <div class="max-w-5xl mx-auto space-y-12">
-            <h3 class="text-5xl font-black uppercase italic border-b border-red-900 pb-6 text-red-600">Pano Yönetimi (V30)</h3>
-            <div class="space-y-4 bg-red-950/20 p-8 rounded-[40px] border border-red-900/50">
-                <label class="text-3xl font-black text-red-500 uppercase tracking-widest">VİDEO LİNKLERİ (.MP4)</label>
-                <textarea id="video-input" class="w-full h-48 bg-black/50 border-4 border-red-900 rounded-[40px] p-8 font-mono text-2xl text-green-400 outline-none"></textarea>
+            <h3 class="text-6xl font-black uppercase italic border-b border-red-900 pb-6 text-red-600">Pano Yönetimi (V31)</h3>
+            <div class="space-y-4 bg-red-950/20 p-10 rounded-[60px] border border-red-900/30">
+                <label class="text-3xl font-black text-red-500 uppercase tracking-widest">1. Reklam Videoları</label>
+                <textarea id="video-input" class="w-full h-40 bg-black/50 border-4 border-red-900 rounded-[40px] p-10 font-mono text-2xl text-green-400 outline-none" placeholder="Dropbox linkleri (Sona ?dl=1 ekleyin)"></textarea>
             </div>
             <div class="space-y-4">
-                <label class="text-3xl font-black text-red-200/50 uppercase tracking-widest">NÖBET LİSTESİ</label>
-                <textarea id="list-input" oninput="checkParseStatus()" class="w-full h-64 bg-red-950/30 border-4 border-red-900 rounded-[40px] p-8 font-mono text-2xl text-blue-300 outline-none"></textarea>
-                <div id="parse-status" class="text-2xl font-black mt-2">--</div>
+                <label class="text-3xl font-black text-red-200/50 uppercase tracking-widest">2. Nöbet Listesi</label>
+                <textarea id="list-input" oninput="checkParseStatus()" class="w-full h-80 bg-red-950/30 border-4 border-red-900 rounded-[50px] p-12 font-mono text-3xl text-blue-300 outline-none"></textarea>
+                <div id="parse-status" class="text-3xl font-black mt-4">--</div>
             </div>
-            <button onclick="saveAndApply()" class="w-full bg-red-600 text-white py-12 rounded-[50px] font-black text-6xl uppercase shadow-2xl hover:bg-red-500">KAYDET</button>
-            <button onclick="document.getElementById('settings-modal').classList.add('hidden')" class="w-full text-slate-500 font-bold uppercase mt-4">Kapat</button>
+            <button onclick="saveAndApply()" class="w-full bg-red-600 text-white py-12 rounded-[60px] font-black text-7xl uppercase shadow-2xl">DEĞİŞİKLİKLERİ KAYDET</button>
         </div>
     </div>
 
@@ -164,7 +178,14 @@
         let dutyRoster = [], videoList = [], currentVideoIndex = 0, clickCounter = 0, lastClickTime = 0;
         const systemPin = "5260";
 
-        function scaleToFit() { const s = Math.min(window.innerWidth / 1080, window.innerHeight / 1920) * 0.98; document.getElementById('viewport').style.transform = `scale(${s})`; }
+        // ÖLÇEKLENDİRME MOTORU - SIFIR MARJ
+        function scaleToFit() {
+            const viewport = document.getElementById('viewport');
+            const scaleX = window.innerWidth / 1080;
+            const scaleY = window.innerHeight / 1920;
+            const scale = Math.min(scaleX, scaleY); // Emniyet payı (0.98) kaldırıldı, tam sığdırma yapıldı.
+            viewport.style.transform = `scale(${scale})`;
+        }
 
         function unicodeGuard(text) {
             if (!text) return "";
@@ -192,8 +213,10 @@
                 document.getElementById('settings-modal').classList.remove('hidden');
                 document.getElementById('custom-pin-input').value = "";
                 checkParseStatus();
-            } else { alert("HATALI!"); document.getElementById('custom-pin-input').value = ""; }
+            } else { alert("ŞİFRE HATALI!"); document.getElementById('custom-pin-input').value = ""; }
         }
+
+        function closePinOverlay() { document.getElementById('pin-overlay').classList.add('hidden'); }
 
         function checkParseStatus() {
             const raw = document.getElementById('list-input').value;
@@ -201,7 +224,7 @@
             const rOda = /<([^>]+)>\s*<([^>]+)>\s*<([^>]+)>/g;
             const matches = text.match(rOda) || [];
             const s = document.getElementById('parse-status');
-            s.textContent = matches.length > 0 ? `${matches.length} KAYIT AKTİF ✓` : "FORMAT HATALI X";
+            s.textContent = matches.length > 0 ? `${matches.length} KAYIT ALGILANDI ✓` : "FORMAT HATALI X";
             s.style.color = matches.length > 0 ? "#22c55e" : "#ef4444";
         }
 
@@ -218,11 +241,9 @@
         }
 
         function saveAndApply() {
-            const l = document.getElementById('list-input').value;
-            const v = document.getElementById('video-input').value;
-            localStorage.setItem('n_v30_list', l);
-            localStorage.setItem('n_v30_video', v);
-            process(l, v);
+            localStorage.setItem('n_v31_list', document.getElementById('list-input').value);
+            localStorage.setItem('n_v31_video', document.getElementById('video-input').value);
+            process(document.getElementById('list-input').value, document.getElementById('video-input').value);
             checkMode();
             document.getElementById('settings-modal').classList.add('hidden');
         }
@@ -233,31 +254,22 @@
             const day = now.getDay();
             const isWeekend = (day === 0 || day === 6);
             const isAdTime = !isWeekend && (hour >= 8 && hour < 18);
-
+            
             const setup = document.getElementById('setup-layer');
-            const main = document.getElementById('main-content');
-            const header = document.getElementById('main-header');
+            const mainContent = document.getElementById('main-content');
             const videoLayer = document.getElementById('video-layer');
-            const infoLayer = document.getElementById('info-layer');
             const videoElement = document.getElementById('ad-video');
 
-            if (dutyRoster.length === 0) { setup.style.display = 'flex'; main.style.display = 'none'; return; }
+            if (dutyRoster.length === 0) { setup.style.display = 'flex'; mainContent.style.opacity = '0'; return; }
 
             setup.style.display = 'none';
-            main.style.display = 'flex';
+            mainContent.style.opacity = '1';
 
-            // REKLAM MODU: Header'ı ve Nöbetçi bilgilerini gizle
             if (isAdTime && videoList.length > 0) {
-                header.style.display = 'none';
                 videoLayer.style.display = 'block';
-                infoLayer.style.display = 'none';
                 if (videoElement.paused || videoElement.src === "") playNextVideo();
-            } 
-            // NÖBET MODU: Header'ı ve Nöbetçi bilgilerini göster
-            else {
-                header.style.display = 'flex';
+            } else {
                 videoLayer.style.display = 'none';
-                infoLayer.style.display = 'flex';
                 videoElement.pause();
                 videoElement.src = "";
                 
@@ -273,7 +285,7 @@
             if (videoList.length === 0) return;
             const v = document.getElementById('ad-video');
             v.src = videoList[currentVideoIndex];
-            v.play().catch(() => setTimeout(skipVideo, 3000));
+            v.play().catch(() => setTimeout(skipVideo, 2000));
             v.onended = skipVideo;
         }
 
@@ -286,10 +298,10 @@
             document.getElementById('ph-name').textContent = ph.isim;
             document.getElementById('ph-address').textContent = ph.adres;
             document.getElementById('ph-phone').textContent = ph.tel;
-            const query = encodeURIComponent(`${ph.isim} Eczanesi Niksar Tokat`);
-            document.getElementById('map-iframe').src = `https://maps.google.com/maps?q=${query}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
-            const mapLink = `https://www.google.com/maps/search/?api=1&query=${query}`;
-            document.getElementById('qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(mapLink)}&color=020617`;
+            const q = encodeURIComponent(`${ph.isim} Eczanesi Niksar Tokat`);
+            document.getElementById('map-iframe').src = `https://maps.google.com/maps?q=${q}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+            const mapLink = `https://www.google.com/maps/search/?api=1&query=${q}`;
+            document.getElementById('qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=${encodeURIComponent(mapLink)}&color=020617`;
             
             const now = new Date();
             const isNöbetçi = (now.getDay() === 0 || now.getDay() === 6) || (now.getHours() >= 18 || now.getHours() < 8);
@@ -298,8 +310,8 @@
 
         window.onload = () => {
             scaleToFit(); window.addEventListener('resize', scaleToFit);
-            const sl = localStorage.getItem('n_v30_list');
-            const sv = localStorage.getItem('n_v30_video');
+            const sl = localStorage.getItem('n_v31_list');
+            const sv = localStorage.getItem('n_v31_video');
             if (sl) {
                 document.getElementById('list-input').value = sl;
                 document.getElementById('video-input').value = sv || "";
