@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Niksar Dijital Pano - V31</title>
+    <title>Niksar Dijital Pano - V32</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         
-        /* KOYU ECZANE KIRMIZISI - DERİNLİK ARTIRILDI */
         html, body {
             background: #1a0505 !important;
             margin: 0; padding: 0;
@@ -18,25 +17,33 @@
             display: flex; justify-content: center; align-items: center;
         }
 
-        /* VİTRİN KAPSAYICI - SIFIR MARJ */
         #viewport {
             width: 1080px; height: 1920px;
             display: flex; flex-direction: column;
             position: relative;
             transform-origin: center center;
             box-sizing: border-box;
-            padding: 30px; /* Padding minimize edildi */
+            padding: 30px;
         }
 
-        /* VİDEO KATMANI: TÜM EKRANI (VIEWPORT DIŞINI BİLE) KAPLAR */
-        #video-layer {
+        /* SEAMLESS VIDEO ENGINE - ÇİFT KATMANLI OYNATICI */
+        #video-container {
             position: fixed;
             inset: 0;
-            z-index: 10000; /* Her şeyin üstünde */
+            z-index: 10000;
             background: black;
             display: none;
         }
-        video { width: 100%; height: 100%; object-fit: cover; }
+        .ad-video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out; /* Yumuşak geçiş */
+        }
+        .ad-video.active { opacity: 1; z-index: 10; }
 
         .urgent-flash {
             animation: flash-red 1s infinite;
@@ -70,10 +77,11 @@
 </head>
 <body>
 
-    <!-- VIDEO LAYER (SADECE MESAİ SAATİNDE TÜM EKRANI KAPLAR) -->
-    <div id="video-layer">
-        <video id="ad-video" muted playsinline></video>
-        <div class="absolute bottom-10 right-10 bg-black/60 px-8 py-3 rounded-full text-xl font-bold uppercase tracking-widest text-white/70 border border-white/10">Tanıtım Yayını</div>
+    <!-- SEAMLESS VIDEO ENGINE -->
+    <div id="video-container">
+        <video id="video1" class="ad-video" muted playsinline preload="auto"></video>
+        <video id="video2" class="ad-video" muted playsinline preload="auto"></video>
+        <div class="absolute bottom-10 right-10 bg-black/60 px-8 py-3 rounded-full text-xl font-bold uppercase tracking-widest text-white/70 border border-white/10 z-[100]">Tanıtım Yayını</div>
     </div>
 
     <div id="viewport">
@@ -82,48 +90,37 @@
             <div class="bg-red-600 w-48 h-48 rounded-[50px] flex items-center justify-center mb-12 shadow-2xl">
                 <svg width="100" height="100" viewBox="0 0 100 100"><path d="M30 25H75V38H43V44H70V56H43V62H75V75H30V25Z" fill="white"/></svg>
             </div>
-            <h2 class="text-7xl font-black uppercase mb-6 tracking-tighter">SİSTEM HAZIR</h2>
+            <h2 class="text-7xl font-black uppercase mb-6 tracking-tighter text-white">SİSTEM HAZIR</h2>
             <p class="text-4xl text-slate-400">Veri girişi için sol alta 5 kez tıkla.</p>
         </div>
 
         <!-- NÖBETÇİ İÇERİĞİ -->
         <div id="main-content" class="flex-1 flex flex-col w-full h-full opacity-0 transition-opacity duration-700">
             <header class="flex flex-col items-center space-y-4 mb-10">
-                <div class="flex items-center gap-8">
+                <div class="flex items-center gap-8 text-white">
                     <div class="bg-white w-20 h-20 rounded-2xl flex items-center justify-center shadow-2xl">
                         <svg width="50" height="50" viewBox="0 0 100 100"><path d="M30 25H75V38H43V44H70V56H43V62H75V75H30V25Z" fill="#E30613"/></svg>
                     </div>
                     <h1 class="text-5xl font-black italic tracking-tighter uppercase opacity-80">NİKSAR NÖBETÇİ ECZANE</h1>
                 </div>
-                <div id="clock" class="text-[15rem] font-black leading-none tabular-nums tracking-tighter drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)]">00:00:00</div>
+                <div id="clock" class="text-[15rem] font-black leading-none tabular-nums tracking-tighter text-white drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)]">00:00:00</div>
                 <div id="date-text" class="text-4xl font-bold text-red-200/40 uppercase tracking-[0.5em]">-- --- ----</div>
             </header>
 
             <main id="info-layer" class="flex-1 flex flex-col space-y-8 overflow-hidden">
-                <!-- NÖBETÇİ KARTI -->
                 <div class="glass-card p-14 flex flex-col items-center text-center space-y-10 shadow-2xl">
-                    <div id="status-badge" class="urgent-flash px-24 py-6 rounded-full text-6xl font-black uppercase text-white shadow-2xl">
-                        ŞU AN NÖBETÇİ
-                    </div>
-                    
+                    <div id="status-badge" class="urgent-flash px-24 py-6 rounded-full text-6xl font-black uppercase text-white shadow-2xl">ŞU AN NÖBETÇİ</div>
                     <h2 id="ph-name" class="text-[11rem] font-black uppercase tracking-tighter leading-[0.8] py-4 text-white drop-shadow-xl">--</h2>
-                    
                     <div class="w-full h-0.5 bg-white/10 rounded-full"></div>
-                    
                     <div class="flex items-center gap-8">
                         <svg class="w-16 h-16 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                         <p id="ph-phone" class="text-8xl font-black text-green-400 tabular-nums tracking-tighter">--</p>
                     </div>
-
                     <p id="ph-address" class="text-5xl text-red-100/70 font-bold leading-tight max-w-5xl italic">--</p>
                 </div>
-
-                <!-- HARİTA -->
                 <div class="flex-1 relative min-h-[450px]">
                     <iframe id="map-iframe" width="100%" height="100%" frameborder="0"></iframe>
                 </div>
-
-                <!-- NAVİGASYON VE ALT BİLGİ -->
                 <div class="flex justify-between items-center bg-white p-10 rounded-[70px] shadow-2xl border-b-[20px] border-red-900/10">
                     <div class="flex items-center gap-10">
                         <img id="qr-code" src="" class="w-48 h-48" alt="QR">
@@ -131,11 +128,6 @@
                             <p class="font-black text-6xl leading-none uppercase italic tracking-tighter">NAVİGASYON</p>
                             <p class="font-bold text-2xl opacity-50 uppercase mt-4 text-slate-500">Kameranla Tara</p>
                         </div>
-                    </div>
-                    <div class="text-right text-slate-400 font-bold space-y-1 pr-6">
-                        <p class="text-xl uppercase tracking-widest">Nöbet Saatleri</p>
-                        <p class="text-slate-900 text-3xl font-black">H.İçi: 18:00 - 08:00</p>
-                        <p class="text-slate-900 text-3xl font-black uppercase">H.Sonu: 24 SAAT</p>
                     </div>
                 </div>
             </main>
@@ -159,8 +151,8 @@
 
     <!-- SETTINGS MODAL -->
     <div id="settings-modal" class="fixed inset-0 bg-[#1a0505]/98 z-[50000] hidden p-20 overflow-y-auto text-left">
-        <div class="max-w-5xl mx-auto space-y-12">
-            <h3 class="text-6xl font-black uppercase italic border-b border-red-900 pb-6 text-red-600">Pano Yönetimi (V31)</h3>
+        <div class="max-w-5xl mx-auto space-y-12 text-white">
+            <h3 class="text-6xl font-black uppercase italic border-b border-red-900 pb-6 text-red-600">Pano Yönetimi (V32)</h3>
             <div class="space-y-4 bg-red-950/20 p-10 rounded-[60px] border border-red-900/30">
                 <label class="text-3xl font-black text-red-500 uppercase tracking-widest">1. Reklam Videoları</label>
                 <textarea id="video-input" class="w-full h-40 bg-black/50 border-4 border-red-900 rounded-[40px] p-10 font-mono text-2xl text-green-400 outline-none" placeholder="Dropbox linkleri (Sona ?dl=1 ekleyin)"></textarea>
@@ -176,14 +168,12 @@
 
     <script>
         let dutyRoster = [], videoList = [], currentVideoIndex = 0, clickCounter = 0, lastClickTime = 0;
+        let activeVideoPlayer = 1;
         const systemPin = "5260";
 
-        // ÖLÇEKLENDİRME MOTORU - SIFIR MARJ
         function scaleToFit() {
             const viewport = document.getElementById('viewport');
-            const scaleX = window.innerWidth / 1080;
-            const scaleY = window.innerHeight / 1920;
-            const scale = Math.min(scaleX, scaleY); // Emniyet payı (0.98) kaldırıldı, tam sığdırma yapıldı.
+            const scale = Math.min(window.innerWidth / 1080, window.innerHeight / 1920);
             viewport.style.transform = `scale(${scale})`;
         }
 
@@ -241,8 +231,8 @@
         }
 
         function saveAndApply() {
-            localStorage.setItem('n_v31_list', document.getElementById('list-input').value);
-            localStorage.setItem('n_v31_video', document.getElementById('video-input').value);
+            localStorage.setItem('n_v32_list', document.getElementById('list-input').value);
+            localStorage.setItem('n_v32_video', document.getElementById('video-input').value);
             process(document.getElementById('list-input').value, document.getElementById('video-input').value);
             checkMode();
             document.getElementById('settings-modal').classList.add('hidden');
@@ -257,8 +247,7 @@
             
             const setup = document.getElementById('setup-layer');
             const mainContent = document.getElementById('main-content');
-            const videoLayer = document.getElementById('video-layer');
-            const videoElement = document.getElementById('ad-video');
+            const videoContainer = document.getElementById('video-container');
 
             if (dutyRoster.length === 0) { setup.style.display = 'flex'; mainContent.style.opacity = '0'; return; }
 
@@ -266,12 +255,19 @@
             mainContent.style.opacity = '1';
 
             if (isAdTime && videoList.length > 0) {
-                videoLayer.style.display = 'block';
-                if (videoElement.paused || videoElement.src === "") playNextVideo();
+                videoContainer.style.display = 'block';
+                // Eğer hiçbir video başlamadıysa ilkini başlat
+                const v1 = document.getElementById('video1');
+                const v2 = document.getElementById('video2');
+                if (v1.src === "" && v2.src === "") {
+                    startVideoEngine();
+                }
             } else {
-                videoLayer.style.display = 'none';
-                videoElement.pause();
-                videoElement.src = "";
+                videoContainer.style.display = 'none';
+                document.getElementById('video1').pause();
+                document.getElementById('video2').pause();
+                document.getElementById('video1').src = "";
+                document.getElementById('video2').src = "";
                 
                 let t = new Date(now);
                 if (now.getHours() < 8) t.setDate(now.getDate() - 1);
@@ -281,17 +277,42 @@
             }
         }
 
-        function playNextVideo() {
+        // SEAMLESS VIDEO ENGINE LOGIC
+        function startVideoEngine() {
             if (videoList.length === 0) return;
-            const v = document.getElementById('ad-video');
-            v.src = videoList[currentVideoIndex];
-            v.play().catch(() => setTimeout(skipVideo, 2000));
-            v.onended = skipVideo;
+            const v1 = document.getElementById('video1');
+            const v2 = document.getElementById('video2');
+            
+            v1.src = videoList[0];
+            v1.load();
+            v1.classList.add('active');
+            v1.play();
+            activeVideoPlayer = 1;
+
+            // Bir sonraki videoyu diğer oyuncuya hazırla
+            if (videoList.length > 1) {
+                v2.src = videoList[1];
+                v2.load();
+            }
+
+            v1.onended = () => swapVideos(v1, v2);
+            v2.onended = () => swapVideos(v2, v1);
         }
 
-        function skipVideo() {
+        function swapVideos(current, next) {
             currentVideoIndex = (currentVideoIndex + 1) % videoList.length;
-            playNextVideo();
+            const nextIndex = (currentVideoIndex + 1) % videoList.length;
+
+            // Görsel geçiş
+            current.classList.remove('active');
+            next.classList.add('active');
+            next.play();
+
+            // Bir sonraki videoyu (sıradaki) şu an gizlenen oyuncuya yükle
+            setTimeout(() => {
+                current.src = videoList[nextIndex];
+                current.load();
+            }, 1000);
         }
 
         function updateDisplay(ph) {
@@ -310,8 +331,8 @@
 
         window.onload = () => {
             scaleToFit(); window.addEventListener('resize', scaleToFit);
-            const sl = localStorage.getItem('n_v31_list');
-            const sv = localStorage.getItem('n_v31_video');
+            const sl = localStorage.getItem('n_v32_list');
+            const sv = localStorage.getItem('n_v32_video');
             if (sl) {
                 document.getElementById('list-input').value = sl;
                 document.getElementById('video-input').value = sv || "";
