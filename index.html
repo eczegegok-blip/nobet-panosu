@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Niksar Dijital Pano - V32</title>
+    <title>Niksar Dijital Pano - V33</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
@@ -26,7 +26,6 @@
             padding: 30px;
         }
 
-        /* SEAMLESS VIDEO ENGINE - ÇİFT KATMANLI OYNATICI */
         #video-container {
             position: fixed;
             inset: 0;
@@ -41,7 +40,7 @@
             height: 100%;
             object-fit: cover;
             opacity: 0;
-            transition: opacity 0.5s ease-in-out; /* Yumuşak geçiş */
+            transition: opacity 0.8s ease-in-out;
         }
         .ad-video.active { opacity: 1; z-index: 10; }
 
@@ -77,7 +76,6 @@
 </head>
 <body>
 
-    <!-- SEAMLESS VIDEO ENGINE -->
     <div id="video-container">
         <video id="video1" class="ad-video" muted playsinline preload="auto"></video>
         <video id="video2" class="ad-video" muted playsinline preload="auto"></video>
@@ -85,16 +83,14 @@
     </div>
 
     <div id="viewport">
-        <!-- KURULUM EKRANI -->
         <div id="setup-layer">
             <div class="bg-red-600 w-48 h-48 rounded-[50px] flex items-center justify-center mb-12 shadow-2xl">
                 <svg width="100" height="100" viewBox="0 0 100 100"><path d="M30 25H75V38H43V44H70V56H43V62H75V75H30V25Z" fill="white"/></svg>
             </div>
             <h2 class="text-7xl font-black uppercase mb-6 tracking-tighter text-white">SİSTEM HAZIR</h2>
-            <p class="text-4xl text-slate-400">Veri girişi için sol alta 5 kez tıkla.</p>
+            <p class="text-4xl text-slate-400">Giriş için sol alta 5 kez tıkla.</p>
         </div>
 
-        <!-- NÖBETÇİ İÇERİĞİ -->
         <div id="main-content" class="flex-1 flex flex-col w-full h-full opacity-0 transition-opacity duration-700">
             <header class="flex flex-col items-center space-y-4 mb-10">
                 <div class="flex items-center gap-8 text-white">
@@ -134,10 +130,8 @@
         </div>
     </div>
 
-    <!-- SECRET TRIGGER AREA -->
     <div onclick="handleSecretClick()" style="position:fixed; bottom:0; left:0; width:500px; height:500px; z-index:30000; cursor:pointer;"></div>
 
-    <!-- PIN OVERLAY -->
     <div id="pin-overlay" class="fixed inset-0 bg-[#1a0505]/98 z-[40000] hidden flex items-center justify-center">
         <div class="max-w-2xl w-full text-center p-16 space-y-12 glass-card">
             <h3 class="text-7xl font-black uppercase tracking-widest text-red-600">GİRİŞ</h3>
@@ -149,10 +143,9 @@
         </div>
     </div>
 
-    <!-- SETTINGS MODAL -->
     <div id="settings-modal" class="fixed inset-0 bg-[#1a0505]/98 z-[50000] hidden p-20 overflow-y-auto text-left">
         <div class="max-w-5xl mx-auto space-y-12 text-white">
-            <h3 class="text-6xl font-black uppercase italic border-b border-red-900 pb-6 text-red-600">Pano Yönetimi (V32)</h3>
+            <h3 class="text-6xl font-black uppercase italic border-b border-red-900 pb-6 text-red-600">Pano Yönetimi (V33)</h3>
             <div class="space-y-4 bg-red-950/20 p-10 rounded-[60px] border border-red-900/30">
                 <label class="text-3xl font-black text-red-500 uppercase tracking-widest">1. Reklam Videoları</label>
                 <textarea id="video-input" class="w-full h-40 bg-black/50 border-4 border-red-900 rounded-[40px] p-10 font-mono text-2xl text-green-400 outline-none" placeholder="Dropbox linkleri (Sona ?dl=1 ekleyin)"></textarea>
@@ -168,7 +161,7 @@
 
     <script>
         let dutyRoster = [], videoList = [], currentVideoIndex = 0, clickCounter = 0, lastClickTime = 0;
-        let activeVideoPlayer = 1;
+        let watchdogTimer = null;
         const systemPin = "5260";
 
         function scaleToFit() {
@@ -231,8 +224,8 @@
         }
 
         function saveAndApply() {
-            localStorage.setItem('n_v32_list', document.getElementById('list-input').value);
-            localStorage.setItem('n_v32_video', document.getElementById('video-input').value);
+            localStorage.setItem('n_v33_list', document.getElementById('list-input').value);
+            localStorage.setItem('n_v33_video', document.getElementById('video-input').value);
             process(document.getElementById('list-input').value, document.getElementById('video-input').value);
             checkMode();
             document.getElementById('settings-modal').classList.add('hidden');
@@ -256,7 +249,6 @@
 
             if (isAdTime && videoList.length > 0) {
                 videoContainer.style.display = 'block';
-                // Eğer hiçbir video başlamadıysa ilkini başlat
                 const v1 = document.getElementById('video1');
                 const v2 = document.getElementById('video2');
                 if (v1.src === "" && v2.src === "") {
@@ -264,10 +256,7 @@
                 }
             } else {
                 videoContainer.style.display = 'none';
-                document.getElementById('video1').pause();
-                document.getElementById('video2').pause();
-                document.getElementById('video1').src = "";
-                document.getElementById('video2').src = "";
+                stopVideoEngine();
                 
                 let t = new Date(now);
                 if (now.getHours() < 8) t.setDate(now.getDate() - 1);
@@ -277,42 +266,78 @@
             }
         }
 
-        // SEAMLESS VIDEO ENGINE LOGIC
+        // SURVIVOR VIDEO ENGINE
         function startVideoEngine() {
             if (videoList.length === 0) return;
             const v1 = document.getElementById('video1');
             const v2 = document.getElementById('video2');
             
+            resetWatchdog();
+            
             v1.src = videoList[0];
-            v1.load();
             v1.classList.add('active');
-            v1.play();
-            activeVideoPlayer = 1;
+            v1.play().catch(handleVideoError);
 
-            // Bir sonraki videoyu diğer oyuncuya hazırla
             if (videoList.length > 1) {
                 v2.src = videoList[1];
-                v2.load();
             }
 
-            v1.onended = () => swapVideos(v1, v2);
-            v2.onended = () => swapVideos(v2, v1);
+            // Olay dinleyicileri
+            [v1, v2].forEach(v => {
+                v.onended = () => { resetWatchdog(); swapVideos(v === v1 ? v1 : v2, v === v1 ? v2 : v1); };
+                v.onerror = handleVideoError;
+                v.onplay = resetWatchdog;
+            });
+        }
+
+        function stopVideoEngine() {
+            const v1 = document.getElementById('video1');
+            const v2 = document.getElementById('video2');
+            v1.pause(); v2.pause();
+            v1.src = ""; v2.src = "";
+            v1.classList.remove('active'); v2.classList.remove('active');
+            if (watchdogTimer) clearTimeout(watchdogTimer);
         }
 
         function swapVideos(current, next) {
             currentVideoIndex = (currentVideoIndex + 1) % videoList.length;
-            const nextIndex = (currentVideoIndex + 1) % videoList.length;
+            const nextIdx = (currentVideoIndex + 1) % videoList.length;
 
-            // Görsel geçiş
             current.classList.remove('active');
             next.classList.add('active');
-            next.play();
+            
+            const playPromise = next.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(handleVideoError);
+            }
 
-            // Bir sonraki videoyu (sıradaki) şu an gizlenen oyuncuya yükle
+            // Bir sonraki videoyu arka planda hazırla
             setTimeout(() => {
-                current.src = videoList[nextIndex];
+                current.src = videoList[nextIdx];
                 current.load();
             }, 1000);
+        }
+
+        // WATCHDOG: Eğer video 15 saniye içinde ilerlemezse sonrakine atla
+        function resetWatchdog() {
+            if (watchdogTimer) clearTimeout(watchdogTimer);
+            watchdogTimer = setTimeout(() => {
+                console.warn("Watchdog: Video donması algılandı, atlanıyor...");
+                const v1 = document.getElementById('video1');
+                const v2 = document.getElementById('video2');
+                if (v1.classList.contains('active')) swapVideos(v1, v2);
+                else swapVideos(v2, v1);
+            }, 15000); // 15 saniyelik emniyet payı
+        }
+
+        function handleVideoError() {
+            console.error("Video hatası! Bir sonraki videoya geçiliyor...");
+            const v1 = document.getElementById('video1');
+            const v2 = document.getElementById('video2');
+            setTimeout(() => {
+                if (v1.classList.contains('active')) swapVideos(v1, v2);
+                else swapVideos(v2, v1);
+            }, 2000);
         }
 
         function updateDisplay(ph) {
@@ -331,8 +356,8 @@
 
         window.onload = () => {
             scaleToFit(); window.addEventListener('resize', scaleToFit);
-            const sl = localStorage.getItem('n_v32_list');
-            const sv = localStorage.getItem('n_v32_video');
+            const sl = localStorage.getItem('n_v33_list');
+            const sv = localStorage.getItem('n_v33_video');
             if (sl) {
                 document.getElementById('list-input').value = sl;
                 document.getElementById('video-input').value = sv || "";
